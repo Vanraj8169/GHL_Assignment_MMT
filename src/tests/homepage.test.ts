@@ -1,25 +1,26 @@
 import test, { Page } from "@playwright/test";
 import { HomePage } from "../pages/HomePage";
 
+test.describe("Validating Ease my trip website", async () => {
+  let page: Page;
+  let homePage: HomePage;
 
-test.describe("Validating Make my trip website", async () => {
-    let page: Page;
-    let homePage:HomePage;
-    test.beforeAll(async ({browser}) =>{
-        page = await browser.newPage();
-        homePage = new HomePage(page);
-        await homePage.landToHomePage(process.env.HOMEPAGE_URL!);
-    })
+  test.beforeAll(async ({ browser }) => {
+    const context = await browser.newContext();
+    await context.grantPermissions(["geolocation"], {
+      origin: `${process.env.HOMEPAGE_URL}`,
+    });
+    const page = await context.newPage();
+    homePage = new HomePage(page);
 
-    test("clicking flight", async () => {
-        await homePage.clickToFlights();
-    })
+    await homePage.landToHomePage(process.env.HOMEPAGE_URL!);
+  });
 
-    test("Enter To and From City Details", async () => {
-        await homePage.enterToAndFromCityDetails("Pune","Bangalore");
-    })
+  test("clicking flight", async () => {
+    await homePage.clickToFlights();
+  });
 
-    test('Selecting Date with Lowest Fare', async () => {
-        await homePage.selectingDateWithLowestFare();
-    })
-})
+  test("Enter To and From City Details and Selecting Date", async () => {
+    await homePage.enterToAndFromCityDetails("Pune", "Bangalore");
+  });
+});
